@@ -89,19 +89,11 @@ std::array<float, 4>& Mat4x4::operator[](size_t index) {
 }
 
 bool Mat4x4::operator==(const Mat4x4& mat) const {
-	for (int y = 0; y < Mat4x4::HEIGHT; y++) {
-		for (int x = 0; x < Mat4x4::WIDTH; x++) {
-			if (m[y][x] != mat.m[y][x]) {
-				return false;
-			}
-		}
-	}
-
-	return true;
+	return m == mat.m;
 }
 
 bool Mat4x4::operator!=(const Mat4x4& mat) const {
-	return !operator==(mat);
+	return m != mat.m;
 }
 
 void Mat4x4::Indentity() {
@@ -141,6 +133,12 @@ void Mat4x4::Inverse() {
 	//単位行列
 	Mat4x4 identity = MakeMatrixIndentity();
 
+	// pibotを1にするためのバッファ
+	float toOne = *(tmp.m.begin()->begin());
+
+	// 見ている行の一部の値を0.0fにするためにバッファ
+	float tmpNum = 0.0f;
+
 	// 掃き出し法
 	for (int i = 0; i < Mat4x4::HEIGHT; i++) {
 		// ピボット選択
@@ -169,10 +167,10 @@ void Mat4x4::Inverse() {
 		}
 
 		// tmpを単位行列に近づけるために見ている要素の行を見ている要素で割る
-		float num = tmp.m[i][i];
+		toOne = tmp.m[i][i];
 		for (int x = 0; x < Mat4x4::HEIGHT; x++) {
-			tmp.m[i][x] /= num;
-			identity.m[i][x] /= num;
+			tmp.m[i][x] /= toOne;
+			identity.m[i][x] /= toOne;
 		}
 
 		// tmpの見ている列を単位行列に近づけるための処理
@@ -181,7 +179,7 @@ void Mat4x4::Inverse() {
 				continue;
 			}
 
-			float tmpNum = -tmp.m[y][i];
+			tmpNum = -tmp.m[y][i];
 			for (int x = 0; x < Mat4x4::WIDTH; x++) {
 				tmp.m[y][x] += tmpNum * tmp.m[i][x];
 				identity.m[y][x] += tmpNum * identity.m[i][x];
