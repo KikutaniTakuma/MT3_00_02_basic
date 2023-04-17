@@ -1,4 +1,4 @@
-﻿#include "Mat4x4.h"
+#include "Mat4x4.h"
 #include "Vector3D/Vector3D.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -144,7 +144,7 @@ void Mat4x4::Inverse() {
 	// 掃き出し法
 	for (int i = 0; i < Mat4x4::HEIGHT; i++) {
 		// ピボット選択
-		if (tmp.m[i][i] == 0.0f && i < Mat4x4::HEIGHT - 1) {
+		if (tmp.m[i][i] == 0.0f && i < Mat4x4::HEIGHT) {
 			// 行要素番号バッファ
 			int pibIndex = i;
 			// ピボットバッファ
@@ -152,7 +152,7 @@ void Mat4x4::Inverse() {
 
 			// ピボット設定
 			for (int y = i + 1; y < Mat4x4::HEIGHT; y++) {
-				if (tmp.m[y][i] != 0.0f && pibot < fabs(tmp.m[y][i])) {
+				if (tmp.m[y][i] != 0.0f && pibot < fabsf(tmp.m[y][i])) {
 					pibot = fabsf(tmp.m[y][i]);
 					pibIndex = y;
 				}
@@ -167,23 +167,24 @@ void Mat4x4::Inverse() {
 			tmp.m[i].swap(tmp.m[pibIndex]);
 			identity.m[i].swap(identity.m[pibIndex]);
 		}
-		// 一番最後の要素が0だった場合逆行列は存在しないので処理終了
-		else if (*(--(--tmp.m.cend())->cend()) == 0.0f) { return; }
 
 		// tmpを単位行列に近づけるために見ている要素の行を見ている要素で割る
+		float num = tmp.m[i][i];
 		for (int x = 0; x < Mat4x4::HEIGHT; x++) {
-			identity.m[i][x] /= tmp.m[i][i];
-			tmp.m[i][x] /= tmp.m[i][i];
+			tmp.m[i][x] /= num;
+			identity.m[i][x] /= num;
 		}
 
 		// tmpの見ている列を単位行列に近づけるための処理
-		for (int y = 0; y < Mat4x4::HEIGHT; y++) {
+		for (int y = 0; y < Mat4x4::HEIGHT; ++y) {
 			if (i == y) {
 				continue;
 			}
+
+			float tmpNum = -tmp.m[y][i];
 			for (int x = 0; x < Mat4x4::WIDTH; x++) {
-				identity.m[y][x] += -tmp.m[y][i] * identity.m[i][x];
-				tmp.m[y][x] += -tmp.m[y][i] * tmp.m[i][x];
+				tmp.m[y][x] += tmpNum * tmp.m[i][x];
+				identity.m[y][x] += tmpNum * identity.m[i][x];
 			}
 		}
 	}
@@ -195,6 +196,8 @@ void Mat4x4::Inverse() {
 
 	// 逆行列にした行列を代入
 	*this = identity;
+
+	/// 苦労した割にはすっきりしないプログラムでつらい
 }
 
 
