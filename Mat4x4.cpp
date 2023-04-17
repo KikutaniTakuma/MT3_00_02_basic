@@ -5,6 +5,11 @@
 #include <algorithm>
 #include "Novice.h"
 
+#if _DEBUG
+#include <chrono>
+#endif // _DEBUG
+
+
 Mat4x4::Mat4x4()
 	:m({ 0.0f })
 {}
@@ -127,6 +132,10 @@ void Mat4x4::Scalar(const Vector3D& vec) {
 }
 
 void Mat4x4::Inverse() {
+#if _DEBUG
+	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+#endif
+
 	//一時保存用
 	Mat4x4 tmp = *this;
 
@@ -195,6 +204,13 @@ void Mat4x4::Inverse() {
 	// 逆行列にした行列を代入
 	*this = identity;
 
+#if _DEBUG
+	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	std::string msg = "Inverse Matrix Process Time : " + std::to_string(static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count())) + " microseconds\n";
+	OutputDebugStringA(msg.c_str());
+#endif
+
+
 	/// 苦労した割にはすっきりしないプログラムでつらい
 }
 
@@ -219,36 +235,36 @@ void MatrixScreenPrintf(int x, int y, const Mat4x4& mat, std::string msg) {
 }
 
 
-Mat4x4&& MakeMatrixIndentity() {
+Mat4x4 MakeMatrixIndentity() {
 	Mat4x4 tmp;
 	tmp.Indentity();
-	return std::move(tmp);
+	return tmp;
 }
 
-Mat4x4&& MakeMatrixInverse(Mat4x4 mat) {
+Mat4x4 MakeMatrixInverse(Mat4x4 mat) {
 	Mat4x4 tmp = mat;
 	tmp.Inverse();
-	return std::move(tmp);
+	return tmp;
 }
 
-Mat4x4&& MakeMatrixTransepose(Mat4x4 mat) {
+Mat4x4 MakeMatrixTransepose(Mat4x4 mat) {
 	Mat4x4 tmp = mat;
 	tmp.Transepose();
-	return std::move(tmp);
+	return tmp;
 }
 
-Mat4x4&& MakeMatrixTranslate(Vector3D vec) {
+Mat4x4 MakeMatrixTranslate(Vector3D vec) {
 	Mat4x4 mat;
 
 	mat.Translate(vec);
 
-	return std::move(mat);
+	return mat;
 }
 
-Mat4x4&& MakeMatrixScalar(Vector3D vec) {
+Mat4x4 MakeMatrixScalar(Vector3D vec) {
 	Mat4x4 mat;
 
 	mat.Scalar(vec);
 
-	return std::move(mat);
+	return mat;
 }

@@ -94,21 +94,21 @@ public:
 /// 単位行列
 /// </summary>
 /// <returns>単位行列を返す</returns>
-Mat4x4&& MakeMatrixIndentity();
+Mat4x4 MakeMatrixIndentity();
 
 /// <summary>
 /// 平行移動行列
 /// </summary>
 /// <param name="vec">移動ベクトル</param>
 /// <returns>平行移動行列を返す</returns>
-Mat4x4&& MakeMatrixTranslate(Vector3D vec);
+Mat4x4 MakeMatrixTranslate(Vector3D vec);
 
 /// <summary>
 /// スカラー倍行列
 /// </summary>
 /// <param name="vec">大きさベクトル</param>
 /// <returns>スカラー倍行列を返す</returns>
-Mat4x4&& MakeMatrixScalar(Vector3D vec);
+Mat4x4 MakeMatrixScalar(Vector3D vec);
 
 /// <summary>
 /// 逆行列
@@ -116,11 +116,11 @@ Mat4x4&& MakeMatrixScalar(Vector3D vec);
 /// </summary>
 /// <param name="mat">逆行列にしたい行列</param>
 /// <returns>引数の逆行列</returns>
-Mat4x4&& MakeMatrixInverse(Mat4x4 mat);
+Mat4x4 MakeMatrixInverse(Mat4x4 mat);
 
 /// <summary>
 /// 転置行列
 /// </summary>
 /// <param name="mat">転置行列にしたい行列</param>
 /// <returns>引数の転置行列</returns>
-Mat4x4&& MakeMatrixTransepose(Mat4x4 mat);
+Mat4x4 MakeMatrixTransepose(Mat4x4 mat);
