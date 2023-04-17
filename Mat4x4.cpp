@@ -219,36 +219,36 @@ void MatrixScreenPrintf(int x, int y, const Mat4x4& mat, std::string msg) {
 }
 
 
-Mat4x4 MakeMatrixIndentity() {
+Mat4x4&& MakeMatrixIndentity() {
 	Mat4x4 tmp;
 	tmp.Indentity();
-	return tmp;
+	return std::move(tmp);
 }
 
-Mat4x4 MakeMatrixInverse(Mat4x4 mat) {
+Mat4x4&& MakeMatrixInverse(Mat4x4 mat) {
 	Mat4x4 tmp = mat;
 	tmp.Inverse();
-	return tmp;
+	return std::move(tmp);
 }
 
-Mat4x4 MakeMatrixTransepose(Mat4x4 mat) {
+Mat4x4&& MakeMatrixTransepose(Mat4x4 mat) {
 	Mat4x4 tmp = mat;
 	tmp.Transepose();
-	return tmp;
+	return std::move(tmp);
 }
 
-Mat4x4 MakeMatrixTranslate(Vector3D vec) {
+Mat4x4&& MakeMatrixTranslate(Vector3D vec) {
 	Mat4x4 mat;
 
 	mat.Translate(vec);
 
-	return mat;
+	return std::move(mat);
 }
 
-Mat4x4 MakeMatrixScalar(Vector3D vec) {
+Mat4x4&& MakeMatrixScalar(Vector3D vec) {
 	Mat4x4 mat;
 
 	mat.Scalar(vec);
 
-	return mat;
+	return std::move(mat);
 }
