@@ -132,7 +132,7 @@ void Mat4x4::Scalar(const Vector3D& vec) {
 }
 
 void Mat4x4::Inverse() {
-#if _DEBUG
+#ifdef _DEBUG
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 #endif
 
@@ -145,7 +145,7 @@ void Mat4x4::Inverse() {
 	// pibotを1にするためのバッファ
 	float toOne = *(tmp.m.begin()->begin());
 
-	// 見ている行の一部の値を0.0fにするためにバッファ
+	// 見ている行の一部の値を0.0fにするためのバッファ(0除算が発生しないように初期化は1.0fで行う)
 	float tmpNum = 0.0f;
 
 	// 掃き出し法
@@ -204,7 +204,7 @@ void Mat4x4::Inverse() {
 	// 逆行列にした行列を代入
 	*this = identity;
 
-#if _DEBUG
+#ifdef _DEBUG
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	std::string msg = "Inverse Matrix Process Time : " + std::to_string(static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count())) + " microseconds\n";
 	OutputDebugStringA(msg.c_str());
