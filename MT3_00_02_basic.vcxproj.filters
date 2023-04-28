@@ -20,6 +20,9 @@
     <Filter Include="Vector3D">
       <UniqueIdentifier>{3d6a0934-31ed-4c8f-b037-4474d1e3c5a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Matrix3x3">
+      <UniqueIdentifier>{7be005a5-4ac7-4f96-b80f-61358de7b818}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\KamataEngine\DirectXGame\base\DirectXCommon.cpp">
@@ -46,6 +49,9 @@
     </ClCompile>
     <ClCompile Include="Vector3D\Vector3D.cpp">
       <Filter>Vector3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix3x3\Matrix3x3.cpp">
+      <Filter>Matrix3x3</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +128,9 @@
     </ClInclude>
     <ClInclude Include="Vector3D\Vector3D.h">
       <Filter>Vector3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix3x3\Matrix3x3.h">
+      <Filter>Matrix3x3</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,6 +9,8 @@
 #include <chrono>
 #endif // _DEBUG
 
+#include "Matrix3x3/Matrix3x3.h"
+
 
 Mat4x4::Mat4x4()
 	:m({ 0.0f })
@@ -131,78 +133,82 @@ void Mat4x4::Scalar(const Vector3D& vec) {
 	this->m[3][3] = 1.0f;
 }
 
+Mat4x4 operator*(float scalar, Mat4x4 mat) {
+	for (int y = 0; y < 4; y++) {
+		for (int x = 0; x < 4; x++) {
+			mat[y][x] *= scalar;
+		}
+	}
+
+	return mat;
+}
+
 void Mat4x4::Inverse() {
 #ifdef _DEBUG
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 #endif
 
-	//一時保存用
-	Mat4x4 tmp = *this;
+	Mat4x4 result = {};
 
-	//単位行列
-	Mat4x4 identity = MakeMatrixIndentity();
+	float A[4] = {};
 
-	// pibotを1にするためのバッファ
-	float toOne = *(tmp.m.begin()->begin());
-
-	// 見ている行の一部の値を0.0fにするためのバッファ(0除算が発生しないように初期化は1.0fで行う)
-	float tmpNum = 0.0f;
-
-	// 掃き出し法
-	for (int i = 0; i < Mat4x4::HEIGHT; i++) {
-		// ピボット選択
-		if (tmp.m[i][i] == 0.0f && i < Mat4x4::HEIGHT) {
-			// 行要素番号バッファ
-			int pibIndex = i;
-			// ピボットバッファ
-			float pibot = fabsf(tmp.m[i][i]);
-
-			// ピボット設定
-			for (int y = i + 1; y < Mat4x4::HEIGHT; y++) {
-				if (tmp.m[y][i] != 0.0f && pibot < fabsf(tmp.m[y][i])) {
-					pibot = fabsf(tmp.m[y][i]);
-					pibIndex = y;
+	//小行列
+	Matrix3x3 b[4][4] = {};
+	int B[4][4] = {};
+	for (int i = 0; i < 4; i++) {
+		A[i] = m[i][0];
+		for (int j = 0; j < 4; j++) {
+			B[i][j] = i + j;
+			for (int row = 0; row < 3; row++) {
+				for (int column = 0; column < 3; column++) {
+					if (i <= row) {
+						if (j <= column) {
+							b[i][j].m[row][column] = m[row + 1][column + 1];
+						}
+						else {
+							b[i][j].m[row][column] = m[row + 1][column];
+						}
+					}
+					else {
+						if (j <= column) {
+							b[i][j].m[row][column] = m[row][column + 1];
+						}
+						else {
+							b[i][j].m[row][column] = m[row][column];
+						}
+					}
 				}
 			}
-
-			//ピボットが0だった場合逆行列は存在しないので処理終了
-			if (pibot == 0.0f) {
-				return;
-			}
-
-			// 見てる値が0だったらその行を見ている値の列で絶対値の一番高い行と交換
-			tmp.m[i].swap(tmp.m[pibIndex]);
-			identity.m[i].swap(identity.m[pibIndex]);
 		}
+	}
 
-		// tmpを単位行列に近づけるために見ている要素の行を見ている要素で割る
-		toOne = tmp.m[i][i];
-		for (int x = 0; x < Mat4x4::HEIGHT; x++) {
-			tmp.m[i][x] /= toOne;
-			identity.m[i][x] /= toOne;
+	float num = 0;
+
+	Mat4x4 c = {};
+	for (int row = 0; row < 4; row++) {
+		if (row == 0 || row == 2) {
+			num += A[row] * Matrix3x3::SarrasRule(b[row][0]);
 		}
-
-		// tmpの見ている列を単位行列に近づけるための処理
-		for (int y = 0; y < Mat4x4::HEIGHT; ++y) {
-			if (i == y) {
-				continue;
+		else {
+			num -= A[row] * Matrix3x3::SarrasRule(b[row][0]);
+		}
+		for (int column = 0; column < 4; column++) {
+			if (B[row][column] % 2 == 0) {
+				c.m[row][column] = Matrix3x3::SarrasRule(b[column][row]);
 			}
-
-			tmpNum = -tmp.m[y][i];
-			for (int x = 0; x < Mat4x4::WIDTH; x++) {
-				tmp.m[y][x] += tmpNum * tmp.m[i][x];
-				identity.m[y][x] += tmpNum * identity.m[i][x];
+			else {
+				c.m[row][column] = -1 * Matrix3x3::SarrasRule(b[column][row]);
 			}
 		}
 	}
 
-	// tmpが単位行列になっていない場合失敗なので処理終了
-	if (tmp != MakeMatrixIndentity()) {
-		return;
+	if (num != 0) {
+		num = float(1 / num);
 	}
 
-	// 逆行列にした行列を代入
-	*this = identity;
+	result = num * c;
+
+	*this = result;
 
 #ifdef _DEBUG
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
